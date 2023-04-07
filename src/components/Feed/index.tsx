@@ -9,18 +9,26 @@ export interface FeedProps {
 
 export default function Feed ({ initialStories }: FeedProps) {
   const [nextPage, setNextPage] = useState(2);
-  const { isLoading, fetchStories, stories } = useFeed();
+  const { isLoading, fetchOlderStories, fetchEveryNSec, stories } = useFeed(initialStories);
+
+  useEffect(() => {
+    fetchEveryNSec(10);
+  })
 
   const onLoadMoreClicked = async () => {
-    await fetchStories(nextPage);
+    await fetchOlderStories(nextPage);
     setNextPage(nextPage + 1);
   };
   
   return (
-    <section className="[&>article]:mt-4">
-      {initialStories?.map((story) => <Story story={story} />)}
+    <section className="[&>*]:mt-4">
       {stories?.map((story) => <Story story={story} />)}
-      <button onClick={() => onLoadMoreClicked()}>Load More {isLoading && '...loading'}</button>
+      <button
+        className={`w-full p-4 text-cyan-50 text-center font-semibold ${isLoading ? 'bg-gray-500' : 'bg-red-700'}`}
+        onClick={onLoadMoreClicked}
+      >
+        {!isLoading ? 'Load More' : 'Loading...'}
+      </button>
     </section>
   );
 }

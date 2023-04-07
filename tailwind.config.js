@@ -5,7 +5,11 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx}', // Fixed the path, it was missing "/src"
   ],
   theme: {
-    extend: {},
+    fontSize: {
+      xl: ['1.25rem', {
+        lineHeight: '1.25rem',
+      }]
+    },
   },
   plugins: [],
 }
