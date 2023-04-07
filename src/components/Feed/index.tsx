@@ -1,20 +1,26 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../../constants";
 import { ApiFeed } from "../../types";
 import Story from "../Story";
+import useFeed from "../../hooks/feed";
 
-export default function Feed () {
-  const [data, setData] = useState<ApiFeed>();
+export interface FeedProps {
+  initialStories: ApiFeed;
+}
 
-  useEffect(() => {
-    fetch(API_URL).then((response) => response.json()).then((data) => setData(data));
-  }, [])
+export default function Feed ({ initialStories }: FeedProps) {
+  const [nextPage, setNextPage] = useState(2);
+  const { isLoading, fetchStories, stories } = useFeed();
 
-  console.log(data);
+  const onLoadMoreClicked = async () => {
+    await fetchStories(nextPage);
+    setNextPage(nextPage + 1);
+  };
   
   return (
     <section className="[&>article]:mt-4">
-      {data?.map((story) => <Story story={story} />)}
+      {initialStories?.map((story) => <Story story={story} />)}
+      {stories?.map((story) => <Story story={story} />)}
+      <button onClick={() => onLoadMoreClicked()}>Load More {isLoading && '...loading'}</button>
     </section>
   );
 }
