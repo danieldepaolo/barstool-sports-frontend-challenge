@@ -1,34 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ApiFeed, ApiStory } from "../types";
 import { getStories } from "../api";
 
-export default function useFeed(initialStories: ApiFeed) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [stories, setStories] = useState<ApiFeed>(initialStories || []);
-  const [storyIds, setStoryIds] = useState<Set<number>>(new Set());
+export type FeedInsertType = 'prepend' | 'append';
 
-  const fetchOlderStories = async (page: number | string) => {
+export interface UseFeedOptions {
+  initialStories?: ApiFeed;
+  fetchIntervalSecs?: number;
+}
+
+export default function useFeed({ initialStories = [], fetchIntervalSecs = 10 }: UseFeedOptions) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [stories, setStories] = useState<ApiFeed>(initialStories);
+
+  useEffect(() => {
+    const interval = setInterval(fetchNewStories, fetchIntervalSecs * 1000);
+    return () => clearInterval(interval);
+  }, [])
+
+  const addUniqueStories = (stories: ApiFeed, insertType: FeedInsertType) => {
+    setStories(prevStories => {
+      // Set to speed up checking if a fetched story is already in the feed
+      const ids = new Set(prevStories.map((story) => story.id));
+      const uniqueStories = stories.filter((story: ApiStory) => !ids.has(story.id));
+      return insertType === 'append' ? [...prevStories, ...uniqueStories] : [...uniqueStories, ...prevStories];
+    });
+  };
+
+  const fetchNewStories = async () => {
+    const fetchedStories = await getStories();
+    addUniqueStories(fetchedStories, 'prepend');
+  };
+
+  const loadMoreStories = async (page: number | string) => {
     setIsLoading(true);
     const fetchedStories = await getStories(page);
     setIsLoading(false);
-    const newStoriesState = [...stories, ...fetchedStories];
-    setStories(newStoriesState);
-    setStoryIds(new Set([...Array.from(storyIds), ...fetchedStories.map((story: ApiStory) => story.id)]))
+    addUniqueStories(fetchedStories, 'append');
   };
 
-  const fetchEveryNSec = async (nSecs: number) => {
-    await new Promise((resolve) => setTimeout(resolve, nSecs * 1000));
-    const fetchedStories = await getStories();
-    const newStoriesState = stories;
-    fetchedStories.slice().reverse().forEach((story: ApiStory) => {
-      if (!storyIds.has(story.id)) {
-        newStoriesState.unshift(story);
-        storyIds.add(story.id);
-      }
-    });
-    setStories(newStoriesState);
-    fetchEveryNSec(nSecs);
-  };
-
-  return { isLoading, fetchOlderStories, fetchEveryNSec, stories };
+  return { isLoading, loadMoreStories, stories: stories };
 }
