@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
+import { useRef } from "react";
 import Story from "../Story";
 import useFeed from "../../hooks/feed";
-import useInterval from "../../hooks/interval";
 
 export default function Feed () {
-  const [nextPage, setNextPage] = useState(2);
-  const { isLoading, fetchNewStories, loadMoreStories, stories } = useFeed({});
-  const { startInterval } = useInterval(fetchNewStories, 10);
-
-  useEffect(() => {
-    fetchNewStories().then(startInterval).catch((err) => console.error('Error fetching new stories:', err));
-  }, [])
+  const { isLoading, loadMoreStories, stories } = useFeed({});
+  const pageToFetch = useRef(2);
 
   const onLoadMoreClicked = async () => {
-    await loadMoreStories(nextPage);
-    setNextPage(nextPage + 1);
+    await loadMoreStories(pageToFetch.current);
+    pageToFetch.current = pageToFetch.current + 1;
   };
   
   return (
