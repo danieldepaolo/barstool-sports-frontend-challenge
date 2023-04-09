@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ApiFeed, ApiStory } from "../types";
-import { getStories } from "../api";
+import { getStories } from "../helpers/api";
 
 export type FeedInsertType = 'prepend' | 'append';
 
@@ -12,11 +12,6 @@ export interface UseFeedOptions {
 export default function useFeed({ initialStories = [], fetchIntervalSecs = 10 }: UseFeedOptions) {
   const [isLoading, setIsLoading] = useState(false);
   const [stories, setStories] = useState<ApiFeed>(initialStories);
-
-  useEffect(() => {
-    const interval = setInterval(fetchNewStories, fetchIntervalSecs * 1000);
-    return () => clearInterval(interval);
-  }, [])
 
   const addUniqueStories = (stories: ApiFeed, insertType: FeedInsertType) => {
     setStories(prevStories => {
@@ -39,5 +34,5 @@ export default function useFeed({ initialStories = [], fetchIntervalSecs = 10 }:
     addUniqueStories(fetchedStories, 'append');
   };
 
-  return { isLoading, loadMoreStories, stories: stories };
+  return { isLoading, fetchNewStories, loadMoreStories, stories };
 }

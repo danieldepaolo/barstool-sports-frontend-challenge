@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { ApiFeed } from "../../types";
 import Story from "../Story";
 import useFeed from "../../hooks/feed";
+import useInterval from "../../hooks/interval";
 
-export interface FeedProps {
-  initialStories: ApiFeed;
-}
-
-export default function Feed ({ initialStories }: FeedProps) {
+export default function Feed () {
   const [nextPage, setNextPage] = useState(2);
-  const { isLoading, loadMoreStories, stories } = useFeed({ initialStories });
+  const { isLoading, fetchNewStories, loadMoreStories, stories } = useFeed({});
+  const { startInterval } = useInterval(fetchNewStories, 10);
+
+  useEffect(() => {
+    fetchNewStories().then(startInterval).catch((err) => console.error('Error fetching new stories:', err));
+  }, [])
 
   const onLoadMoreClicked = async () => {
     await loadMoreStories(nextPage);
@@ -17,10 +18,10 @@ export default function Feed ({ initialStories }: FeedProps) {
   };
   
   return (
-    <section className="[&>*]:mt-4">
+    <section className="[&>article]:mt-4">
       {stories.map((story) => <Story key={story.id} story={story} />)}
       <button
-        className={`w-full p-4 text-cyan-50 text-center font-semibold ${isLoading ? 'bg-gray-500' : 'bg-red-700'}`}
+        className={`w-full p-4 mt-4 text-cyan-50 text-center font-semibold ${isLoading ? 'bg-gray-500' : 'bg-red-700'}`}
         onClick={onLoadMoreClicked}
       >
         {!isLoading ? 'Load More' : 'Loading...'}
