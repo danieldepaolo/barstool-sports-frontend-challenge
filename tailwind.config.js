@@ -6,8 +6,8 @@ module.exports = {
   ],
   theme: {
     fontSize: {
-      xl: ['1.25rem', {
-        lineHeight: '1rem',
+      lg: ['1.1rem', {
+        lineHeight: '1.25rem',
       }]
     },
   },

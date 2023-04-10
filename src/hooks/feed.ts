@@ -12,7 +12,8 @@ export interface UseFeedOptions {
 }
 
 export default function useFeed({ initialStories = [], fetchIntervalSecs = 10, continuousUpdate = true }: UseFeedOptions) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isLoadingNew, setIsLoadingNew] = useState(false);
   const [stories, setStories] = useState<ApiFeed>(initialStories);
   const { startInterval } = useInterval(fetchNewStories, fetchIntervalSecs);
 
@@ -34,16 +35,18 @@ export default function useFeed({ initialStories = [], fetchIntervalSecs = 10, c
   };
 
   async function fetchNewStories () {
+    setIsLoadingNew(true);
     const fetchedStories = await getStories();
+    setIsLoadingNew(false);
     addUniqueStories(fetchedStories, 'prepend');
   };
 
   const loadMoreStories = async (page: number | string) => {
-    setIsLoading(true);
+    setIsLoadingMore(true);
     const fetchedStories = await getStories(page);
-    setIsLoading(false);
+    setIsLoadingMore(false);
     addUniqueStories(fetchedStories, 'append');
   };
 
-  return { isLoading, fetchNewStories, loadMoreStories, stories };
+  return { isLoadingMore, isLoadingNew, fetchNewStories, loadMoreStories, stories };
 }
