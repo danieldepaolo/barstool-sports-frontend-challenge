@@ -1,5 +1,5 @@
 import { API_URL_PROD } from "../constants";
-import { ApiFeed } from "../types";
+import { ApiFeed } from "../types/storyFeed";
 
 export const getStories = async (page?: number | string): Promise<ApiFeed> => {
   const url = new URL(API_URL_PROD);

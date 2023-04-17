@@ -6,9 +6,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@barstoolsports/react-audio-player": "^2.5.0",
     "next": "latest",
     "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react-dom": "18.1.0",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
     "@types/next": "^9.0.0",

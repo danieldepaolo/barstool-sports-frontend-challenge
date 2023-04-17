@@ -2,10 +2,11 @@ import Head from 'next/head'
 import Image from 'next/image'
 
 import Feed from '../src/components/Feed';
+import PodcastFeed from '../src/components/PodcastFeed';
 
 export default function Home() {
   return (
-    <div className="max-w-xl mx-auto py-4">
+    <div className="max-w-8xl mx-auto py-4">
       <Head>
         <title>Barstool Sports</title>
       </Head>
@@ -13,7 +14,8 @@ export default function Home() {
       <header className="px-4 flex justify-center">
         <Image src="/logo.png" alt="Barstool Sports" width="200" height="64" />
       </header>
-      <main>
+      <main className="flex flex-wrap justify-center gap-3 mt-4">
+        <PodcastFeed />
         <Feed />
       </main>
 

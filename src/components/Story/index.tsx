@@ -1,4 +1,4 @@
-import { ApiStory } from "../../types";
+import { ApiStory } from "../../types/storyFeed";
 
 export interface StoryProps {
   story: ApiStory
@@ -6,7 +6,7 @@ export interface StoryProps {
 
 export default function Story ({ story }: StoryProps) {
   return (
-    <article className="flex gap-4 p-4 border">
+    <article className="flex gap-4 p-4 border max-w-xl">
       <img className="w-48" src={story.thumbnail.desktop} alt={story.title} />
       <div className="flex flex-col justify-between pb-1">
         <h3 className="font-bold text-lg">{story.title}</h3>

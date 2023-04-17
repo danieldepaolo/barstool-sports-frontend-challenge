@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ApiFeed, ApiStory } from "../types";
+import { ApiFeed, ApiStory } from "../types/storyFeed";
 import { getStories } from "../helpers/api";
 import useInterval from "./interval";
 
